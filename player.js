@@ -25,8 +25,13 @@ export default class Player{
         this.animations = this.game.animation.getAnimations("idle");
         this.currentActionState = this.actionStates[0];
         this.animationFrame = 0;
-        this.animationSpeed = 100;
-        this.msPassed = 0; //ms from last animation       
+        this.animationSpeed = 80;
+        this.msPassed = 0; //ms from last animation
+        this.vy = 0;
+        this.speed = 0; 
+        this.attackAngleY = 0.7;
+        this.attackAngleX = 0.8;
+        this.attackingState = false;
     }
 
     update(input, deltaTime){
@@ -37,12 +42,40 @@ export default class Player{
             this.msPassed = 0;
         }
 
+        if(!this.isPlayerOnGround()){
+            this.vy+=0.6;
+        }
+        
+        //right restriction
+        if(this.x > this.game.width-this.width){
+            this.x = this.game.width-this.width;
+        }
+
+        //left restiction
+        if(this.x < 0){
+            this.x = 0;
+        }
+
+        //ground restriction
+        if(this.y > this.game.height-this.height-50){
+            this.y = this.game.height-this.height-50;
+            this.vy = 0;
+            this.currentActionState = this.actionStates[2];
+            this.currentActionState.enter();
+        }
+
+        this.x += this.speed;
+        this.y += this.vy;
         this.msPassed += deltaTime;     
     }
 
     draw(){
         this.game.cntx.drawImage(this.animations[this.animationFrame].image, 0, 0, 
             this.width, this.height, this.x, this.y, this.width, this.height);
+    }
+
+    isPlayerOnGround(){
+        return this.y == this.game.height-this.height-50;
     }
 
     setState(state){

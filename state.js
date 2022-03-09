@@ -29,6 +29,9 @@ export class IdleState{
 
     enter(){
         this.player.animations = this.animations;
+        this.player.animationSpeed = 80;
+        this.player.speed = 0;
+        this.player.attackingState = false;
     }
 }
 
@@ -44,11 +47,18 @@ export class JumpingState{
             case "Pressed down":
                 this.player.setState(states.ATTACKING);
                 break;
+            case "Pressed left":
+                this.player.x -= 10;
+                break;
         }
     }
 
     enter(){
         this.player.animations = this.animations;
+        this.player.vy = -20;
+        this.player.x+=10;
+        this.player.animationSpeed = 80;
+        this.player.attackingState = false;
     }
 }
 
@@ -56,11 +66,28 @@ export class WalkingState{
     constructor(player, animations){
         this.player = player;
         this.animations = animations;
+        this.steps = 0;
     }
     
     handleInput(input){
 
         switch(input){
+            case "Pressed right":
+                
+                this.steps+=0.1;
+
+                if(this.steps > 5 && this.player.speed < 3.5){
+                    this.player.speed+=1;
+                    this.player.animationSpeed -= 40;
+                    this.steps = 0;
+                }
+                else if(this.player.speed == 3.5){
+                    this.player.speed -= 1.5;
+                    this.player.animationSpeed += 20;
+                    this.steps = 0;
+                }
+
+                break;
             case "Released right":
                 this.player.setState(states.IDLE);
                 break;
@@ -75,6 +102,10 @@ export class WalkingState{
 
     enter(){
         this.player.animations = this.animations;
+        this.player.speed = 0.5;
+        this.player.animationSpeed = 80;
+        this.steps = 0;
+        this.player.attackingState = false;
     }
 }
 
@@ -101,6 +132,9 @@ export class AttackingState{
 
     enter(){
         this.player.animations = this.animations;
+        this.player.speed = 0;
+        this.player.animationSpeed-=40;
+        this.player.attackingState = true;
     }
 }
 
@@ -127,5 +161,9 @@ export class TauntState{
 
     enter(){
         this.player.animations = this.animations;
+        this.player.speed = 0;
+        this.player.animationSpeed = 80;
+        this.player.animationSpeed -= 20;
+        this.player.attackingState = false;
     }
 }
