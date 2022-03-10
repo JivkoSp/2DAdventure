@@ -1,3 +1,5 @@
+import {DustParticle, FireParticle} from './particales.js';
+
 const states = {
     IDLE:0,
     JUMP:1,
@@ -67,9 +69,14 @@ export class WalkingState{
         this.player = player;
         this.animations = animations;
         this.steps = 0;
+        this.trail = 2;
+        this.trail_opacity = 0.8;
     }
     
     handleInput(input){
+
+        this.player.walkingParticles.push(new DustParticle(this.player.game, 
+            this.player.x+this.player.width/2, this.player.y+this.player.height-20, this.trail, this.trail_opacity));
 
         switch(input){
             case "Pressed right":
@@ -80,11 +87,14 @@ export class WalkingState{
                     this.player.speed+=1;
                     this.player.animationSpeed -= 40;
                     this.steps = 0;
+                    this.trail+=0.5;
+                    this.trail_opacity = 1;
                 }
                 else if(this.player.speed == 3.5){
                     this.player.speed -= 1.5;
                     this.player.animationSpeed += 20;
                     this.steps = 0;
+                    this.trail--;
                 }
 
                 break;
@@ -106,6 +116,8 @@ export class WalkingState{
         this.player.animationSpeed = 80;
         this.steps = 0;
         this.player.attackingState = false;
+        this.trail = 2;
+        this.trail_opacity = 0.4;
     }
 }
 
@@ -116,6 +128,9 @@ export class AttackingState{
     }
     
     handleInput(input){
+
+        this.player.fireParticles.push(new FireParticle(this.player.game, 
+            this.player.x+this.player.width/2, this.player.y-this.player.height*0.4, "fire.png"));
 
         switch(input){
             case "Pressed right":
@@ -145,6 +160,9 @@ export class TauntState{
     }
     
     handleInput(input){
+
+        this.player.fireParticles.push(new FireParticle(this.player.game, 
+            this.player.x+this.player.width/2+10, this.player.y-this.player.height*0.4, "fire.png"));
 
         switch(input){
             case "Pressed right":

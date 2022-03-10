@@ -47,6 +47,7 @@ export default class Background{
         this.game = game;
         this.backgroundWidth = 1024;
         this.backgroundHeight = 574;
+        this.speed = 6;
         this.currentBackground = this.backgrounds["background1"];
     }
 

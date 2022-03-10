@@ -3,6 +3,7 @@ import Player from "./player.js";
 import Animation from "./animation.js";
 import Background from "./background.js";
 import { FlyEnemy } from "./enemy.js";
+import { CollisionAnimation } from "./animation.js";
 
 export default class Game{
 
@@ -13,8 +14,9 @@ export default class Game{
             let dy = enemy.y - (this.player.y+this.player.height*this.player.attackAngleY);
             let dist = Math.sqrt(Math.pow(dx,2)+Math.pow(dy,2));
 
-            if(dist <= enemy.gameWith+this.player.width/16){
+            if(dist <= enemy.gameWith/2+this.player.width/16){
                 enemy.markForDeletion = true;
+                this.collisions.push(new CollisionAnimation(this, enemy.x, enemy.y));
             }
         });
     }
@@ -43,8 +45,9 @@ export default class Game{
         this.background = new Background(this);
         this.enemies = [];
         this.enemyTypes = ["fly"];
-        this.enemyInterval = 1000;
+        this.enemyInterval = Math.random()*600+100;
         this.timeElapsed = 0;
+        this.collisions = [];
     }
 
     update(deltaTime){
@@ -63,11 +66,21 @@ export default class Game{
         if(this.player.attackingState){
             this.#detectHit();
         }
+
+        this.collisions.forEach((collision, index) => {
+             collision.update(deltaTime);
+            if(collision.markForDeletion){
+                this.collisions.splice(index, 1);
+            }
+        });
     }
 
     draw(){
         this.background.draw();
         this.player.draw();
         this.enemies.forEach((enemy) => enemy.draw());
+        this.collisions.forEach((collision) => {
+            collision.draw();
+        });
     }
 }

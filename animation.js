@@ -133,3 +133,45 @@ export default class Animation{
         return this.animations[animationState];
     }
 }
+
+export class CollisionAnimation{
+    constructor(game, x, y){
+        this.image = new Image();
+        this.image.src = "boom.png";
+        this.game = game;
+        this.spriteWidth = 100;
+        this.spriteHeight = 90;
+        this.sizeModifier = Math.random() + 0.5;
+        this.width = this.spriteWidth*this.sizeModifier;
+        this.height = this.spriteHeight*this.sizeModifier;
+        this.x = x - this.width*0.5;
+        this.y = y - this.height*0.5;
+        this.frameX = 0;
+        this.maxFrame = 4;
+        this.markForDeletion = false;
+        this.animationSpeed = 100;
+        this.msPassed = 0;
+    }
+
+    update(deltaTime){
+
+        this.msPassed += deltaTime;
+
+        if(this.msPassed >= this.animationSpeed){
+      
+            if(this.frameX > 5){
+                this.frameX = 0;
+                this.markForDeletion = true;
+            }
+
+            this.frameX++;
+            this.msPassed = 0;
+        }
+    }
+
+    draw(){
+        this.game.cntx.drawImage(this.image, this.frameX*this.spriteWidth, 0, this.spriteWidth, this.spriteHeight,
+            this.x, this.y, this.width, this.height);
+    }
+}
+

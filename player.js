@@ -32,6 +32,8 @@ export default class Player{
         this.attackAngleY = 0.7;
         this.attackAngleX = 0.8;
         this.attackingState = false;
+        this.walkingParticles = [];
+        this.fireParticles = [];
     }
 
     update(input, deltaTime){
@@ -66,12 +68,34 @@ export default class Player{
 
         this.x += this.speed;
         this.y += this.vy;
-        this.msPassed += deltaTime;     
+        this.msPassed += deltaTime;
+        
+        this.walkingParticles.forEach((particle, index) => {
+            particle.update();
+            if(particle.markForDeletion){
+                this.walkingParticles.splice(index, 1);
+            }
+        });
+
+        this.fireParticles.forEach((particle, index) => {
+            particle.update();
+            if(particle.markForDeletion){
+                this.fireParticles.splice(index, 1);
+            }
+        });
     }
 
     draw(){
         this.game.cntx.drawImage(this.animations[this.animationFrame].image, 0, 0, 
             this.width, this.height, this.x, this.y, this.width, this.height);
+        
+        this.walkingParticles.forEach((particle) => {
+            particle.draw();
+        });
+
+        this.fireParticles.forEach((particle) => {
+            particle.draw();
+        });
     }
 
     isPlayerOnGround(){
