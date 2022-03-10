@@ -15,8 +15,8 @@ export default class Player{
     #showScorePoints(){
         this.game.cntx.font = "20px fantasy";
         this.game.cntx.textAlign = "left";
-        this.game.cntx.fillStyle = "black";
-        this.game.cntx.fillText("Score: " + this.scorePoints, 0, 45);
+        this.game.cntx.fillStyle = this.game.colorText;
+        this.game.cntx.fillText("Score: " + this.totalScorePoints, 0, 45);
     }
 
     constructor(game){
@@ -47,8 +47,12 @@ export default class Player{
         this.attackAngleX = 0.8;
         this.attackingState = false;
         this.walkingParticles = [];
+        this.dustColor1 = 0;
+        this.dustColor2 = 95;
+        this.dustColor3 = 2;
         this.fireParticles = [];
         this.scorePoints = 0;
+        this.totalScorePoints = 0;
     }
 
     update(input, deltaTime){
@@ -106,6 +110,8 @@ export default class Player{
             this.currentActionState = this.actionStates[6];
             this.currentActionState.enter();
         }
+
+        console.log("player score => ", this.scorePoints);
     }
 
     draw(){

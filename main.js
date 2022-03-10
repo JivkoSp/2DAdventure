@@ -21,9 +21,8 @@ window.addEventListener('load', () => {
     
         game.draw();
         game.update(deltaTime);
-        game.sound.play();
 
-        if(!game.gameOver){
+        if(!game.gameOver && !game.winGame){
             requestAnimationFrame(animate);
         }
     }

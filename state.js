@@ -76,7 +76,8 @@ export class WalkingState{
     handleInput(input){
 
         this.player.walkingParticles.push(new DustParticle(this.player.game, 
-            this.player.x+this.player.width/2, this.player.y+this.player.height-20, this.trail, this.trail_opacity));
+            this.player.x+this.player.width/2, this.player.y+this.player.height-20, 
+            this.trail, this.player.dustColor1, this.player.dustColor2, this.player.dustColor3, this.trail_opacity));
 
         switch(input){
             case "Pressed right":

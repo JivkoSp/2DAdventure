@@ -37,10 +37,22 @@ export default class Background{
                 new BackgroundLayer(game.cntx, "backgroundOne (1).png", 1024, 574, 6)
             ],
             "background2":[
-
+                new BackgroundLayer(game.cntx, "backgroundTwo(7).png", 1024, 574, 0),
+                new BackgroundLayer(game.cntx, "backgroundTwo(6).png", 1024, 574, 2.5),
+                new BackgroundLayer(game.cntx, "backgroundTwo(5).png", 1024, 574, 4.2),
+                new BackgroundLayer(game.cntx, "backgroundTwo(4).png", 1024, 574, 5.0),
+                new BackgroundLayer(game.cntx, "backgroundTwo(3).png", 1024, 574, 4.6),
+                new BackgroundLayer(game.cntx, "backgroundTwo(2).png", 1024, 574, 4.2),
+                new BackgroundLayer(game.cntx, "backgroundTwo(1).png", 1024, 574, 6)
             ],
             "background3":[
-
+                new BackgroundLayer(game.cntx, "backgroundTree(7).png", 1024, 574, 0),
+                new BackgroundLayer(game.cntx, "backgroundTree(6).png", 1024, 574, 2.5),
+                new BackgroundLayer(game.cntx, "backgroundTree(5).png", 1024, 574, 4.2),
+                new BackgroundLayer(game.cntx, "backgroundTree(4).png", 1024, 574, 5.0),
+                new BackgroundLayer(game.cntx, "backgroundTree(3).png", 1024, 574, 4.6),
+                new BackgroundLayer(game.cntx, "backgroundTree(2).png", 1024, 574, 4.2),
+                new BackgroundLayer(game.cntx, "backgroundTree(1).png", 1024, 574, 6)
             ]
         };
 
@@ -48,7 +60,10 @@ export default class Background{
         this.backgroundWidth = 1024;
         this.backgroundHeight = 574;
         this.speed = 6;
-        this.currentBackground = this.backgrounds["background1"];
+        this.currentBackground = [];
+        this.backgroundName = "background1";
+        this.backgroundPoints = 0;
+        this.backgroundTimeLimit = 0;
     }
 
     setBackground(background){
@@ -56,6 +71,24 @@ export default class Background{
     }
 
     update(){
+
+        switch(this.backgroundName){
+            case "background1":
+                this.backgroundPoints = 10;
+                this.backgroundTimeLimit = 90;
+                break;
+            case "background2":
+                this.backgroundPoints = 50;
+                this.backgroundTimeLimit = 90;
+                break;
+            case "background3":
+                this.backgroundPoints = 100;
+                this.backgroundTimeLimit = 150;
+                break;
+        }
+
+        this.currentBackground = this.backgrounds[this.backgroundName];
+
         this.currentBackground.forEach((layer) => {
             layer.update();
         });

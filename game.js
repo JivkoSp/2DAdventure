@@ -8,16 +8,27 @@ import { HurtState } from "./state.js";
 
 export default class Game{
 
+    #showTimer(){
+
+        let timeDiff = Date.now() - this.startGame;
+
+        this.cntx.font = "15px fantasy";
+        this.cntx.textAlign = "left";
+        this.cntx.fillStyle = this.colorText;
+        this.cntx.fillText("Time: " + Math.round(timeDiff/1000)+" sec", 215, 17);
+    }
+
     #detectHit(){
         this.enemies.forEach((enemy) => {
 
-            let dx = enemy.x- (this.player.x+this.player.width*this.player.attackAngleX);
-            let dy = enemy.y - (this.player.y+this.player.height*this.player.attackAngleY);
+            let dx = (enemy.x+enemy.gameWith/2)- (this.player.x+this.player.width*this.player.attackAngleX);
+            let dy = (enemy.y+enemy.gameHeight/2) - (this.player.y+this.player.height*this.player.attackAngleY);
             let dist = Math.sqrt(Math.pow(dx,2)+Math.pow(dy,2));
 
-            if(dist <= enemy.gameWith/2+this.player.width/16){
+            if(dist <= enemy.gameWith/3+this.player.width/16){
             
                 this.player.scorePoints+=enemy.hitPoints;
+                this.player.totalScorePoints += enemy.hitPoints;
                 enemy.markForDeletion = true;
                 this.collisions.push(new CollisionAnimation(this, enemy.x, enemy.y));
             }
@@ -28,11 +39,11 @@ export default class Game{
 
         this.enemies.forEach((enemy) => {
 
-            let dx = enemy.x- (this.player.x+this.player.width/2);
-            let dy = enemy.y - (this.player.y+this.player.height/2);
+            let dx = (enemy.x+enemy.gameWith/2)- (this.player.x+this.player.width/2);
+            let dy = (enemy.y+enemy.gameHeight/2) - (this.player.y+this.player.height/2);
             let dist = Math.sqrt(Math.pow(dx,2)+Math.pow(dy,2));
 
-            if(dist <= enemy.gameWith/2+this.player.width/3){
+            if(dist <= enemy.gameWith/3+this.player.width/3){
 
                 this.player.helthBar.update(enemy.hitPower);
                 this.player.currentActionState = this.player.actionStates[5];
@@ -40,6 +51,69 @@ export default class Game{
                 this.player.currentActionState.enter();
             }
         });
+    }
+
+    #winGame(){
+
+        let timeDiff = Date.now() - this.startGame;
+
+        if(this.player.scorePoints >= 650 && Math.round(timeDiff/1000) < 240){
+            this.cntx.font = "40px fantasy";
+            this.cntx.textAlign = "left";
+            this.cntx.fillStyle = "black";
+            this.cntx.fillText("YOU WIN!", (this.width*0.38)-0.8, (this.height*0.39)+0.8);
+            this.cntx.fillStyle = "green";
+            this.cntx.fillText("YOU WIN!", this.width*0.38, this.height*0.39);
+            this.winGame = true;
+        }
+    }
+
+    #winLevel(){
+
+        let timeDiff = Date.now() - this.startGame;
+
+        if(this.player.scorePoints >= this.background.backgroundPoints 
+            && Math.round(timeDiff/1000) < this.background.backgroundTimeLimit){
+                
+            let backgroundName = "";
+            this.activeBackground++;  
+
+            if(this.activeBackground > 2){
+                this.activeBackground = 0;
+            }
+
+            switch(this.activeBackground){
+                case 0:
+                    backgroundName = "background1";
+                    this.colorText = "black";
+                    this.player.scorePoints = 0;
+                    this.player.dustColor1 = 0;
+                    this.player.dustColor2 = 95;
+                    this.player.dustColor3 = 2;
+                    this.startGame = new Date();
+                    break;
+                case 1:
+                    backgroundName = "background2";
+                    this.colorText = "white";
+                    this.player.scorePoints = 0;
+                    this.player.dustColor1 = 200;
+                    this.player.dustColor2 = 220;
+                    this.player.dustColor3 = 250;
+                    this.startGame = new Date();
+                    break;
+                case 2:
+                    backgroundName = "background3";
+                    this.colorText = "white";
+                    this.player.scorePoints = 0;
+                    this.player.dustColor1 = 163;
+                    this.player.dustColor2 = 177;
+                    this.player.dustColor3 = 205;
+                    this.startGame = new Date();
+                    break;
+            }
+
+            this.background.backgroundName = backgroundName;
+        }
     }
 
     #gameOver(){
@@ -77,10 +151,14 @@ export default class Game{
         this.background = new Background(this);
         this.enemies = [];
         this.enemyTypes = ["fly"];
-        this.enemyInterval = Math.random()*600+100;
+        this.enemyInterval = Math.random()*600+400;
         this.timeElapsed = 0;
         this.collisions = [];
         this.gameOver = false;
+        this.winGame = false;
+        this.startGame = new Date();
+        this.activeBackground = 0;
+        this.colorText = "black";
     }
 
     update(deltaTime){
@@ -109,12 +187,16 @@ export default class Game{
         });
 
         if(!this.player.attackingState && this.player.helthBar.helth > 0){
-            this.#detectPlayerHit();
+           // this.#detectPlayerHit();
         }
         
         if(this.gameOver){
             this.#gameOver();
         }
+
+        this.#showTimer();
+        this.#winGame();
+        this.#winLevel();
     }
 
     draw(){

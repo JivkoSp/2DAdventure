@@ -27,12 +27,12 @@ class Particle{
 }
 
 export class DustParticle extends Particle{
-    constructor(game, x, y, trail, opacity){
+    constructor(game, x, y, trail, color1, color2, color3, opacity){
         let size = Math.random()*10+10;
         let speedX = Math.random();
         let speedY = Math.random();
         super(game, x, y, speedX, speedY, size, trail);
-        this.color = `rgba(0,95,2,${opacity})`;
+        this.color = `rgba(${color1},${color2},${color3},${opacity})`;
     }
 
     draw(){
