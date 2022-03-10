@@ -11,6 +11,8 @@ window.addEventListener('load', () => {
     const game  = new Game(context, canvasWidth, canvasHeight);
 
     let lastTime = 0;
+    let lastTimeBird = 0;
+
     function animate(timeStamp){
         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
@@ -19,8 +21,11 @@ window.addEventListener('load', () => {
     
         game.draw();
         game.update(deltaTime);
-        
-        requestAnimationFrame(animate);
+        game.sound.play();
+
+        if(!game.gameOver){
+            requestAnimationFrame(animate);
+        }
     }
 
     animate(0);

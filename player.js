@@ -3,10 +3,21 @@ import{
     JumpingState,
     WalkingState,
     AttackingState,
-    TauntState
+    TauntState,
+    HurtState,
+    DyingState
 } from "./state.js";
 
+import HelthBar from "./playerHelth.js";
+
 export default class Player{
+
+    #showScorePoints(){
+        this.game.cntx.font = "20px fantasy";
+        this.game.cntx.textAlign = "left";
+        this.game.cntx.fillStyle = "black";
+        this.game.cntx.fillText("Score: " + this.scorePoints, 0, 45);
+    }
 
     constructor(game){
         this.game = game;
@@ -15,12 +26,15 @@ export default class Player{
         this.height = this.animation.animationHeight;
         this.x = 0;
         this.y = this.game.height-this.height-50;
+        this.helthBar = new HelthBar(this.game, 0, 1, 200, 20, "green");
         this.actionStates = [
             new IdleState(this, this.game.animation.getAnimations("idle")),
             new JumpingState(this, this.game.animation.getAnimations("jumping")),
             new WalkingState(this, this.game.animation.getAnimations("walking")),
             new TauntState(this, this.game.animation.getAnimations("taunt")),
-            new AttackingState(this, this.game.animation.getAnimations("attacking"))
+            new AttackingState(this, this.game.animation.getAnimations("attacking")),
+            new HurtState(this, this.game.animation.getAnimations("hurt")),
+            new DyingState(this, this.game.animation.getAnimations("dying"))
         ];
         this.animations = this.game.animation.getAnimations("idle");
         this.currentActionState = this.actionStates[0];
@@ -34,6 +48,7 @@ export default class Player{
         this.attackingState = false;
         this.walkingParticles = [];
         this.fireParticles = [];
+        this.scorePoints = 0;
     }
 
     update(input, deltaTime){
@@ -62,8 +77,10 @@ export default class Player{
         if(this.y > this.game.height-this.height-50){
             this.y = this.game.height-this.height-50;
             this.vy = 0;
-            this.currentActionState = this.actionStates[2];
-            this.currentActionState.enter();
+            if(!(this.currentActionState instanceof DyingState)){
+                this.currentActionState = this.actionStates[2];
+                this.currentActionState.enter();
+            }      
         }
 
         this.x += this.speed;
@@ -83,6 +100,12 @@ export default class Player{
                 this.fireParticles.splice(index, 1);
             }
         });
+
+        if(this.helthBar.helth <= 0 && !(this.currentActionState instanceof DyingState)){
+            this.dying = true;
+            this.currentActionState = this.actionStates[6];
+            this.currentActionState.enter();
+        }
     }
 
     draw(){
@@ -96,6 +119,9 @@ export default class Player{
         this.fireParticles.forEach((particle) => {
             particle.draw();
         });
+
+        this.helthBar.draw();
+        this.#showScorePoints();
     }
 
     isPlayerOnGround(){

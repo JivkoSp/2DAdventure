@@ -19,6 +19,8 @@ class Enemy{
         this.y = Math.random()*(game.height/2);    
         this.frames = frames;
         this.frame = 0;
+        this.hitPower = 0.5;
+        this.hitPoints = 2;
     }
 
     update(deltaTime){

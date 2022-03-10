@@ -118,7 +118,6 @@ export default class Animation{
                     new PlayerImage("dying_Minotaur_008.png", 221, 150),
                     new PlayerImage("dying_Minotaur_009.png", 221, 150),
                     new PlayerImage("dying_Minotaur_010.png", 221, 150),
-                    new PlayerImage("dying_Minotaur_011.png", 221, 150),
                     new PlayerImage("dying_Minotaur_012.png", 221, 150),
                     new PlayerImage("dying_Minotaur_013.png", 221, 150),
                     new PlayerImage("dying_Minotaur_014.png", 221, 150)
@@ -138,6 +137,8 @@ export class CollisionAnimation{
     constructor(game, x, y){
         this.image = new Image();
         this.image.src = "boom.png";
+        this.sound = new Audio();
+        this.sound.src = "Fire_impact.wav";
         this.game = game;
         this.spriteWidth = 100;
         this.spriteHeight = 90;

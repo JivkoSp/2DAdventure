@@ -185,3 +185,49 @@ export class TauntState{
         this.player.attackingState = false;
     }
 }
+
+export class HurtState{
+    constructor(player, animations){
+        this.player = player;
+        this.animations = animations;
+    }
+    
+    handleInput(input){
+
+        if(this.player.animationFrame == this.animations.length-1){
+
+            this.player.animationFrame = 0;
+            this.player.setState(states.WALKING);
+        }
+    }
+
+    enter(){
+        this.player.animations = this.animations;
+        this.player.speed = 0;
+        this.player.animationSpeed = 80;
+        this.player.attackingState = false;
+    }
+}
+
+export class DyingState{
+    constructor(player, animations){
+        this.player = player;
+        this.animations = animations;
+    }
+    
+    handleInput(input){
+
+        if(this.player.animationFrame == this.animations.length-1){
+
+            this.player.animationFrame = 0;
+            this.player.game.gameOver = true;
+        }
+    }
+
+    enter(){
+        this.player.animations = this.animations;
+        this.player.speed = 0;
+        this.player.animationSpeed = 80;
+        this.player.attackingState = false;
+    }
+}
