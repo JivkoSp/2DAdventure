@@ -110,8 +110,6 @@ export default class Player{
             this.currentActionState = this.actionStates[6];
             this.currentActionState.enter();
         }
-
-        console.log("player score => ", this.scorePoints);
     }
 
     draw(){

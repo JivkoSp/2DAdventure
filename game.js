@@ -2,8 +2,9 @@ import InputHandler from "./input.js";
 import Player from "./player.js";
 import Animation from "./animation.js";
 import Background from "./background.js";
-import { FlyEnemy } from "./enemy.js";
+import { FlyEnemy, RavenEnemy, GreenMonsterEnemy, GreenMonsterEnemyTwo } from "./enemy.js";
 import { CollisionAnimation } from "./animation.js";
+import { BonusLifeParticle, DustParticle } from "./particales.js";
 import { HurtState } from "./state.js";
 
 export default class Game{
@@ -49,6 +50,29 @@ export default class Game{
                 this.player.currentActionState = this.player.actionStates[5];
                 this.player.animationFrame = 0;
                 this.player.currentActionState.enter();
+            }
+        });
+    }
+
+    #detectBonusLifeContact(){
+
+        this.bonusLifeParticles.forEach((particle) => {
+
+            let dx = (particle.x+particle.size/2) - (this.player.x+this.player.width/2);
+            let dy = (particle.y+particle.size/2) - (this.player.y+this.player.height/2);
+            let dist = Math.sqrt(Math.pow(dx,2)+Math.pow(dy,2));
+
+            if(dist <= particle.size/2+this.player.width/3){
+
+                this.player.helthBar.helth += Math.floor(Math.random()*20+5);
+                if(this.player.helthBar.helth > 100){
+                    this.player.helthBar.helth = 100;
+                }
+                particle.markForDeletion = true;
+                for(let i=0; i<10;i++){
+                    this.dustParticles.push(new DustParticle(this, 
+                        particle.x, particle.y, 2, 200, 200, 100, 1, 30));
+                }
             }
         });
     }
@@ -128,15 +152,28 @@ export default class Game{
     #addEnemy(){
 
         const enemyType = this.enemyTypes[Math.floor(Math.random()*this.enemyTypes.length)];
-
+        
         switch(enemyType)
         {
             case "fly":
                 this.enemies.push(new FlyEnemy(this, 6));
                 break;
+            case "raven":
+                this.enemies.push(new RavenEnemy(this, 5));
+                break;
+            case "greenMonster":
+                this.enemies.push(new GreenMonsterEnemy(this));
+                break;
+            case "greenMonster2":
+                this.enemies.push(new GreenMonsterEnemyTwo(this));
+                break;
         }
 
         this.enemies.sort((a,b) => {return a.y - b.y});
+    }
+
+    #addBunusLife(){
+        this.bonusLifeParticles.push(new BonusLifeParticle(this, Math.random()*this.width, 0));
     }
 
     constructor(cntx, width, height){
@@ -150,8 +187,8 @@ export default class Game{
         this.player = new Player(this);
         this.background = new Background(this);
         this.enemies = [];
-        this.enemyTypes = ["fly"];
-        this.enemyInterval = Math.random()*600+400;
+        this.enemyTypes = ["fly", "raven", "greenMonster", "greenMonster2"];
+        this.enemyInterval = Math.random()*600+900;
         this.timeElapsed = 0;
         this.collisions = [];
         this.gameOver = false;
@@ -159,6 +196,8 @@ export default class Game{
         this.startGame = new Date();
         this.activeBackground = 0;
         this.colorText = "black";
+        this.bonusLifeParticles = [];
+        this.dustParticles = [];
     }
 
     update(deltaTime){
@@ -169,6 +208,10 @@ export default class Game{
         if(this.timeElapsed >= this.enemyInterval){
             this.#addEnemy();
             this.timeElapsed = 0;
+        }
+
+        if(this.timeElapsed >= this.enemyInterval*Math.random()*500+100){
+            this.#addBunusLife();
         }
 
         this.enemies.forEach((enemy) => enemy.update(deltaTime));
@@ -186,8 +229,22 @@ export default class Game{
             }
         });
 
+        this.bonusLifeParticles.forEach((particle, index) => {
+            particle.update();
+            if(particle.markForDeletion){
+                this.bonusLifeParticles.splice(index, 1);
+            }
+        });
+
+        this.dustParticles.forEach((particle, index) => {
+            particle.update();
+            if(particle.markForDeletion){
+                this.dustParticles.splice(index, 1);
+            }
+        });
+
         if(!this.player.attackingState && this.player.helthBar.helth > 0){
-           // this.#detectPlayerHit();
+            this.#detectPlayerHit();
         }
         
         if(this.gameOver){
@@ -197,6 +254,7 @@ export default class Game{
         this.#showTimer();
         this.#winGame();
         this.#winLevel();
+        this.#detectBonusLifeContact();
     }
 
     draw(){
@@ -205,6 +263,14 @@ export default class Game{
         this.enemies.forEach((enemy) => enemy.draw());
         this.collisions.forEach((collision) => {
             collision.draw();
+        });
+
+        this.bonusLifeParticles.forEach((particle) => {
+            particle.draw();
+        });
+
+        this.dustParticles.forEach((particle) => {
+            particle.draw();
         });
     }
 }

@@ -41,6 +41,7 @@ export class JumpingState{
     constructor(player, animations){
         this.player = player;
         this.animations = animations;
+        this.trail = 3;
     }
     
     handleInput(input){
@@ -51,6 +52,15 @@ export class JumpingState{
                 break;
             case "Pressed left":
                 this.player.x -= 10;
+                break;
+            case "Pressed right":
+                this.player.vy += 2;
+
+                for(let i=0; i<10;i++){
+                    this.player.walkingParticles.push(new DustParticle(this.player.game, 
+                        this.player.x+this.player.width/2, this.player.y+this.player.height-20, 
+                        this.trail, 100, 100, 100, 0.6, 10));
+                }
                 break;
         }
     }
