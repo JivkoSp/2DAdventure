@@ -54,6 +54,4 @@ Sphere collision is used for collision detection:
 
 - **Sphere collision:** Determines collision by calculating distance using the formula: `dist = sqrt(pow(dx,2) + pow(dy,2))`. Collision occurs when `dist < Rdist`, where `Rdist = r1 + r2`.
 
-These images are centered and sized to maintain consistency and improve readability within the markdown file.
-
 
